@@ -1,23 +1,22 @@
-from django.shortcuts import render, get_object_or_404
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
 from django.db.models import Max
-from .serializers import ProductSerializer, OrderSerializer, ProductInfoSerializer
-from .models import Product, Order, OrderItem
+from rest_framework.decorators import api_view
+from rest_framework.generics import ListCreateAPIView, RetrieveAPIView
+from rest_framework.response import Response
+
+from .models import Order, Product
+from .serializers import (OrderSerializer, ProductInfoSerializer,
+                          ProductSerializer)
 
 
-@api_view(['GET'])
-def product_list(request):
-    products = Product.objects.all()
-    serializer = ProductSerializer(products, many=True)
-    return Response(serializer.data)
+class ProductListCreateAPIView(ListCreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
 
-@api_view(['GET'])
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    serializer = ProductSerializer(product)
-    return Response(serializer.data)
+class ProductDetailAPIView(RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_url_kwarg = 'product_id'
 
 
 @api_view(['GET'])
